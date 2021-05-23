@@ -1,4 +1,4 @@
-# simple-arc-rs
+# simple-arc
 
 Simple Arc implementation in Rust
 
