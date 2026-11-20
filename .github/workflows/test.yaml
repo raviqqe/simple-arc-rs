@@ -5,30 +5,22 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/cargo@v1
-        with:
-          command: test
+      - uses: actions/checkout@v7.0.1
+      - run: cargo test
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: -- --check
+      - uses: actions/checkout@v7.0.1
+      - run: cargo fmt -- --check
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions-rs/clippy-check@v1
-        with:
-          args: -- -D warnings
-          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v7.0.1
+      - run: cargo clippy --all-targets -- -D warnings
   spell-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: streetsidesoftware/cspell-action@master
+      - uses: actions/checkout@v7.0.1
+      - uses: streetsidesoftware/cspell-action@v9.2.0
         with:
           files: "**/*.{md,rs}"
