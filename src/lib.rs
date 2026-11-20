@@ -1,7 +1,7 @@
 use std::{
     alloc::{alloc, dealloc, Layout},
     ops::Deref,
-    ptr::null,
+    ptr::NonNull,
     sync::atomic::{fence, Ordering},
 };
 
@@ -20,7 +20,9 @@ struct ArcInner<T> {
 impl<T> Arc<T> {
     pub fn new(payload: T) -> Self {
         if Self::is_zero_sized() {
-            Self { pointer: null() }
+            Self {
+                pointer: NonNull::dangling().as_ptr(),
+            }
         } else {
             let pointer = unsafe { &mut *(alloc(Self::block_layout()) as *mut ArcInner<T>) };
 
@@ -52,7 +54,7 @@ impl<T> Deref for Arc<T> {
     type Target = T;
 
     fn deref(&self) -> &T {
-        &self.block_pointer().payload
+        unsafe { &*self.pointer }
     }
 }
 
@@ -131,6 +133,11 @@ mod tests {
         #[allow(clippy::unit_cmp)]
         fn load_payload() {
             assert_eq!(*Arc::new(()), ());
+        }
+
+        #[test]
+        fn load_aligned_payload() {
+            assert_eq!(*Arc::new([0u64; 0]), [0u64; 0]);
         }
     }
 }
